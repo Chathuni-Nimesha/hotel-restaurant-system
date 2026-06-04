@@ -18,5 +18,9 @@ A luxury restaurant reservation and dining experience website built using:
 * Contact Form
 * Premium Footer
 
+## GitHub Repository
+
+[View Project on GitHub](https://github.com/Chathuni-Nimesha/hotel-restaurant-system)
+
 Developed by Chathuni Nimesha.
 
