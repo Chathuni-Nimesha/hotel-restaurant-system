@@ -11,6 +11,72 @@ const diningAreas = [
 const Reservation = () => {
   const [selectedArea, setSelectedArea] = useState("");
 
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    date: "",
+    time: "",
+    guests: 1,
+    specialRequests: "",
+  });
+
+  const handleChange =(
+    e: React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: 
+         e.target.name === "guests" 
+           ? Number(e.target.value)
+           : e.target.value,
+    });
+  };
+  
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/reservations",
+        {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...formData,
+              diningArea: selectedArea,
+            }),
+            }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Reservation Created Successfully!");
+
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          date: "",
+          time: "",
+          guests: 1,
+          specialRequests: "",
+        });
+
+        setSelectedArea("");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    }
+
+      };
+
   return (
     
     <section className="min-h-screen bg-gradient-to-b from-black via-[#111] to-black text-white py-32">
@@ -45,23 +111,33 @@ const Reservation = () => {
 
               <input
                 type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
                 className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
               />
 
               <input
                 type="time"
-                defaultValue="19:00"
+                name="time"
+                value={formData.time}
+                onChange={handleChange}
                 className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
               />
+                
+              
 
               <select
+                name="guests"
+                value={formData.guests}
+                onChange={handleChange}
                 className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
               >
-                <option>1 Guest</option>
-                <option>2 Guests</option>
-                <option>4 Guests</option>
-                <option>6 Guests</option>
-                <option>8 Guests</option>
+                <option value={1}>1 Guest</option>
+                <option value={2}>2 Guests</option>
+                <option value={4}>4 Guests</option>
+                <option value={6}>6 Guests</option>
+                <option value={8}>8 Guests</option>
               </select>
 
             </div>
@@ -139,18 +215,27 @@ const Reservation = () => {
 
               <input
                 type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
                 placeholder="Full Name"
                 className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
               />
 
               <input
                 type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 placeholder="Phone Number"
                 className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
               />
 
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Email Address"
                 className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl md:col-span-2"
               />
@@ -159,11 +244,15 @@ const Reservation = () => {
 
             <textarea
               rows={5}
+              name="specialRequests"
+              value={formData.specialRequests}
+              onChange={handleChange}
               placeholder="Special Requests"
               className="w-full bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl mb-8"
             />
 
             <button
+              onClick={handleSubmit}
               className="
                 w-full
                 bg-yellow-500
