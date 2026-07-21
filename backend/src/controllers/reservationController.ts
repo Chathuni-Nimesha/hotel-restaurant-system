@@ -1,24 +1,36 @@
 import { Request, Response } from "express";
 import Reservation from "../models/Reservation";
 
+
+
 export const createReservation = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const reservation = await Reservation.create(req.body);
+    const count = await Reservation.countDocuments();
+
+    console.log("Creating reservation...");
+    console.log(`GR${1001 + count}`);
+    
+    const reservation = await Reservation.create({
+      ...req.body,
+      reservationNumber: `GR${1001 + count}`,
+    });
 
     res.status(201).json({
       success: true,
       message: "Reservation created successfully",
       reservation,
     });
-  } catch (error) {
-     console.log("Reservation Error:", error);
+  } catch (error: any) {
+     console.log("========= Error ==========");
+     console.log(error);
+     console.log("=================")
 
      res.status(500).json({
       success: false,
-      message: "Failed to create reservation",
+      message: error.message,
     });
   }
 };

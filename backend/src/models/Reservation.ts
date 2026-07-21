@@ -7,6 +7,12 @@ const reservationSchema = new mongoose.Schema(
             required: true,
         },
 
+        reservationNumber: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+
         email: {
             type: String,
             required: true,
@@ -37,9 +43,16 @@ const reservationSchema = new mongoose.Schema(
             required: true,
         },
 
-        specialRequest: {
+        specialRequests: {
             type: String,
-        },  
+        }, 
+        
+
+        status: {
+            type: String,
+            enum: ["Pending", "Confirmed", "Cancelled"],
+            default: "Pending",
+        },
 
     },
     {

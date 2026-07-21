@@ -18,6 +18,7 @@ const Reservation = () => {
     date: "",
     time: "",
     guests: 1,
+    diningArea: "",
     specialRequests: "",
   });
 
@@ -63,6 +64,7 @@ const Reservation = () => {
           date: "",
           time: "",
           guests: 1,
+          diningArea: "",
           specialRequests: "",
         });
 
