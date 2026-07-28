@@ -9,13 +9,15 @@ export const createReservation = async (
 ) => {
   try {
     const count = await Reservation.countDocuments();
+    const reservationNumber = `GR${1001 + count}`;
+  
 
     console.log("Creating reservation...");
-    console.log(`GR${1001 + count}`);
+    console.log(reservationNumber);
     
     const reservation = await Reservation.create({
       ...req.body,
-      reservationNumber: `GR${1001 + count}`,
+      reservationNumber,
     });
 
     res.status(201).json({

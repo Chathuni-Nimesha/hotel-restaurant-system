@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import reservationRoutes from "./routes/reservationRoutes";
+import menuRoutes from "./routes/menuRoutes";
 
 
 const app = express();
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/reservations", reservationRoutes);
+app.use("/api/menus", menuRoutes);
 
 
 export default app;

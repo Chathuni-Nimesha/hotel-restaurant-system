@@ -16,6 +16,9 @@ export default function ReservationsPage() {
   });
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [sortOrder, setSortOrder] = useState("Newest");
+  const [dateFilter, setDateFilter] = useState("");
 
 
   const fetchReservations = async () => {
@@ -82,18 +85,60 @@ export default function ReservationsPage() {
     }
   };
 
-  const filteredReservations = reservations.filter((reservation: any) =>
-    reservation.fullName
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()) ||
+  // Dashboard Statistics
+  const totalReservations = reservations.length;
 
-    reservation.email
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()) ||
+  const pendingReservations = reservations.filter(
+    (reservation: any) => reservation.status === "Pending"
+  ).length;
 
-    reservation.phone
-      .includes(searchTerm)
-  );
+  const confirmedReservations = reservations.filter(
+    (reservation: any) => reservation.status === "Confirmed"
+  ).length;
+  
+  const cancelledReservations = reservations.filter(
+    (reservation: any) => reservation.status === "Cancelled"
+  ).length;
+
+  const completedReservations = reservations.filter(
+    (reservation: any) => reservation.status === "Completed"
+  ).length;
+
+  const filteredReservations = reservations.filter((reservation: any) => {
+    const matchesSearch =
+      reservation.fullName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+
+       reservation.email
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+
+       reservation.phone
+        .includes(searchTerm);
+
+    const matchesStatus =
+      statusFilter === "All" ||
+      reservation.status === statusFilter;
+
+    const matchesDate =
+      dateFilter === "" ||
+      reservation.date === dateFilter;
+
+    return matchesSearch && matchesStatus && matchesDate;
+
+   
+  });
+
+  const sortedReservations = [...filteredReservations].sort((a: any, b: any) => {
+    if (sortOrder === "Newest") {
+       return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+
+      
+  });
+
 
 
   return (
@@ -102,25 +147,29 @@ export default function ReservationsPage() {
       Reservation Dashboard
     </h1>
     <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-yellow-500 text-black p-6 rounded">
-            <h2 className="text-xl font-bold">
-                {reservations.length}
-            </h2>
-            <p>Total Reservations</p>
+        <div className="bg-blue-600 p-6 rounded-lg">
+          <h2 className="text-3xl font-bold">{totalReservations}</h2>
+          <p>Total Reservations</p>
         </div>
 
-        <div className="bg-green-500 text-white p-6 rounded">
-            <h2 className="text-xl font-bold">
-                Available 
-            </h2>
-            <p>Active Booking</p>
+        <div className="bg-yellow-500 text-black p-6 rounded-lg">
+          <h2 className="text-3xl font-bold">{pendingReservations}</h2>
+          <p>Pending</p>
         </div>
 
-        <div className="bg-blue-500 text-white p-6 rounded">
-            <h2 className="text-xl font-bold">
-                Grand Royal
-            </h2>
-            <p>Restaurant Dashboard</p>
+        <div className="bg-green-600 p-6 rounded-lg">
+          <h2 className="text-3xl font-bold">{confirmedReservations}</h2>
+          <p>Confirmed</p>
+        </div>
+
+        <div className="bg-red-600 p-6 rounded-lg">
+          <h2 className="text-3xl font-bold">{cancelledReservations}</h2>
+          <p>Cancelled</p>
+        </div>
+
+        <div className="bg-indigo-600 p-6 rounded-lg">
+          <h2 className="text-3xl font-bold">{completedReservations}</h2>
+          <p>Completed</p>
         </div>
     </div>
 
@@ -191,6 +240,29 @@ export default function ReservationsPage() {
               
             />
           </div>
+          
+          <div>
+            <label className="block mb-1">Status</label>
+
+            <select
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  status: e.target.value,
+                })
+              }
+              className="w-full p-2 rounded bg-gray-800 border border-gray-600"
+              >
+                <option value="Pending"> 🟡 Pending</option>
+                <option value="Confirmed"> 🟢 Confirmed</option>
+                <option value="Cancelled"> 🔴 Cancelled</option>
+                <option value="Completed"> 🔵 Completed</option>
+            </select>
+
+
+          </div>
+
         </div>
 
         {/*Buttons */}
@@ -215,14 +287,44 @@ export default function ReservationsPage() {
     )}
 
     <div className="overflow-x-auto">
-      <div className="mb-6">
+      <div className="flex gap-4 mb-6">
         <input
           type="text"
           placeholder=" 🔍 Search by Name, Email or Phone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-3 rounded bg-gray-800 border border-gray-600 text-white"
+          className="flex-1 p-3 rounded bg-gray-800 border border-gray-600 text-white"
           />
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-52 p-3 rounded bg-gray-800 border border-gray-600 text-white"
+          />
+
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-52 p-3 rounded bg-gray-800 border border-gray-600 text-white"
+            >
+              <option value="All">All Statuses</option>
+              <option value="Pending"> 🟡 Pending</option>
+              <option value="Confirmed"> 🟢 Confirmed</option>
+              <option value="Cancelled"> 🔴 Cancelled</option>
+              <option value="Completed"> 🔵 Completed</option>
+            </select>
+
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="w-48 p-3 rounded bg-gray-800 border border-gray-600 text-white"
+
+            >
+              <option value="Newest">Newest</option>
+              <option value="Oldest">Oldest</option>
+
+            </select>
       </div>
 
       <table className="w-full border border-gray-700 rounded-lg overflow-hidden">
@@ -241,7 +343,7 @@ export default function ReservationsPage() {
         </thead>
 
         <tbody>
-          {filteredReservations.map((reservation: any) => (
+          {sortedReservations.map((reservation: any) => (
             <tr
               key={reservation._id}
               className="border-b border-gray-700 text-center hover:bg-gray-900"
@@ -253,7 +355,23 @@ export default function ReservationsPage() {
               <td className="p-3">{reservation.time}</td>
               <td className="p-3">{reservation.diningArea}</td>
               <td className="p-3">{reservation.guests}</td>
-              <td className="p-3">{reservation.status}</td>
+              <td className="p-3">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-semibold
+                    ${
+                      reservation.status === "Confirmed"
+                        ? "bg-green-600"
+                        : reservation.status === "Cancelled"
+                        ? "bg-red-600"
+                        :reservation.status === "Completed"
+                        ? "bg-blue-600"
+                        : "bg-yellow-500 text-black"
+                    }`}
+                >
+                  {reservation.status}
+
+                </span>
+              </td>
 
               <td className="p-3 space-x-2">
                 <button
