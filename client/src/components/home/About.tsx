@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useScrollToSection } from "@/hooks/useScrollToSection";
 
@@ -25,13 +26,13 @@ const About = () => {
         />
 
         <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
-          <figure className="overflow-hidden rounded-2xl shadow-2xl">
-            <img
+          <figure className="relative h-[320px] overflow-hidden rounded-2xl shadow-2xl sm:h-[400px] md:h-[500px]">
+            <OptimizedImage
               src="/images/Interior.jpeg"
               alt="Elegant interior dining room at Grand Royal restaurant"
-              loading="lazy"
-              decoding="async"
-              className="h-[320px] w-full object-cover transition duration-700 hover:scale-[1.02] sm:h-[400px] md:h-[500px]"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition duration-700 hover:scale-[1.02]"
             />
           </figure>
 

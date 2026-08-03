@@ -3,6 +3,7 @@ export { Card, type CardProps } from "./Card";
 export { DatePicker, type DatePickerProps } from "./DatePicker";
 export { Input, type InputProps } from "./Input";
 export { Label, type LabelProps } from "./Label";
+export { OptimizedImage } from "./OptimizedImage";
 export { SectionHeading, type SectionHeadingProps } from "./SectionHeading";
 export { Select, type SelectOption, type SelectProps } from "./Select";
 export { SkipLink } from "./SkipLink";

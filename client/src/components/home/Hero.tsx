@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { useScrollToSection } from "@/hooks/useScrollToSection";
 
 const Hero = () => {
@@ -10,11 +11,17 @@ const Hero = () => {
     <section
       id="home"
       aria-label="Hero"
-      className="relative flex h-screen items-center justify-center bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/images/hero.jpg')",
-      }}
+      className="relative flex h-screen items-center justify-center overflow-hidden"
     >
+      <OptimizedImage
+        src="/images/hero.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+
       <div className="absolute inset-0 bg-black/70" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">

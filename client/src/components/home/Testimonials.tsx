@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 interface Testimonial {
@@ -69,13 +70,15 @@ export default function Testimonials() {
                   </blockquote>
 
                   <footer className="mt-6 flex items-center gap-4">
-                    <img
-                      src={item.image}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="h-16 w-16 rounded-full border-2 border-yellow-500 object-cover"
-                    />
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-yellow-500">
+                      <OptimizedImage
+                        src={item.image}
+                        alt={`${item.name} profile photo`}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    </div>
 
                     <div>
                       <cite className="not-italic">

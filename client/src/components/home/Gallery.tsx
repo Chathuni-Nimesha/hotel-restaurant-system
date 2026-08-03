@@ -1,12 +1,13 @@
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 const galleryImages = [
-  "/images/gallery1.jpg",
-  "/images/gallery2.jpg",
-  "/images/gallery3.jpg",
-  "/images/gallery4.jpg",
-  "/images/gallery5.jpeg",
-  "/images/gallery6.jpg",
+  { src: "/images/gallery1.jpg", alt: "Grand Royal elegant dining room" },
+  { src: "/images/gallery2.jpg", alt: "Grand Royal premium table setting" },
+  { src: "/images/gallery3.jpg", alt: "Grand Royal luxury lounge area" },
+  { src: "/images/gallery4.jpg", alt: "Grand Royal chef special presentation" },
+  { src: "/images/gallery5.jpeg", alt: "Grand Royal rooftop dining view" },
+  { src: "/images/gallery6.jpg", alt: "Grand Royal private dining experience" },
 ];
 
 export default function Gallery() {
@@ -27,17 +28,17 @@ export default function Gallery() {
         />
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {galleryImages.map((image, index) => (
+          {galleryImages.map((image) => (
             <div
-              key={index}
-              className="group overflow-hidden rounded-3xl border border-gray-800 bg-[#111] transition-all duration-500 hover:border-yellow-500 hover:-translate-y-2"
+              key={image.src}
+              className="group relative h-80 overflow-hidden rounded-3xl border border-gray-800 bg-[#111] transition-all duration-500 hover:border-yellow-500 hover:-translate-y-2"
             >
-              <img
-                src={image}
-                alt={`Gallery ${index + 1}`}
-                loading="lazy"
-                decoding="async"
-                className="h-80 w-full object-cover transition duration-700 group-hover:scale-110"
+              <OptimizedImage
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover transition duration-700 group-hover:scale-110"
               />
             </div>
           ))}

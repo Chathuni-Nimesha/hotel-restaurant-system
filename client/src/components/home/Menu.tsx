@@ -1,6 +1,8 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { MenuGridSkeleton } from "@/components/ui/Skeleton";
 import { useMenus } from "@/hooks/useMenus";
 import {
@@ -8,6 +10,7 @@ import {
   groupMenusByCategory,
   MENU_PLACEHOLDER_IMAGE,
 } from "@/lib/menu-utils";
+import { cn } from "@/lib/cn";
 import type { MenuItem } from "@/types/menu";
 
 interface MenuItemCardProps {
@@ -15,30 +18,26 @@ interface MenuItemCardProps {
   showShadow?: boolean;
 }
 
-function MenuItemCard({ item, showShadow = false }: MenuItemCardProps) {
+const MenuItemCard = memo(function MenuItemCard({
+  item,
+  showShadow = false,
+}: MenuItemCardProps) {
   return (
     <article
-      className={`
-        group
-        overflow-hidden
-        rounded-2xl
-        border
-        border-gray-800
-        bg-[#111]
-        transition-all
-        duration-500
-        hover:-translate-y-2
-        hover:border-yellow-500
-        ${showShadow ? "hover:shadow-[0_0_25px_rgba(234,179,8,0.2)]" : ""}
-      `}
+      className={cn(
+        "group overflow-hidden rounded-2xl border border-gray-800 bg-[#111] transition-all duration-500 hover:-translate-y-2 hover:border-yellow-500",
+        showShadow && "hover:shadow-[0_0_25px_rgba(234,179,8,0.2)]"
+      )}
     >
-      <img
-        src={item.image || MENU_PLACEHOLDER_IMAGE}
-        alt={item.name}
-        loading="lazy"
-        decoding="async"
-        className="h-64 w-full object-cover"
-      />
+      <div className="relative h-64 w-full overflow-hidden">
+        <OptimizedImage
+          src={item.image || MENU_PLACEHOLDER_IMAGE}
+          alt={item.name}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover"
+        />
+      </div>
 
       <div className="flex items-center justify-between p-5">
         <h4 className="text-xl font-bold">{item.name}</h4>
@@ -48,11 +47,14 @@ function MenuItemCard({ item, showShadow = false }: MenuItemCardProps) {
       </div>
     </article>
   );
-}
+});
 
 const Menu = () => {
   const { menus, isLoading, error, refetch } = useMenus();
-  const groupedMenus = groupMenusByCategory(menus);
+  const groupedMenus = useMemo(
+    () => groupMenusByCategory(menus),
+    [menus]
+  );
 
   return (
     <section

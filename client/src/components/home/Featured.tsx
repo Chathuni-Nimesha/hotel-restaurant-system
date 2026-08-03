@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 interface FeaturedDish {
@@ -55,13 +56,13 @@ const Featured = () => {
                 className="group overflow-hidden p-0 transition-transform duration-500"
               >
                 <article aria-label={dish.name}>
-                  <div className="overflow-hidden">
-                    <img
+                  <div className="relative h-64 overflow-hidden md:h-72">
+                    <OptimizedImage
                       src={dish.image}
                       alt={dish.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-64 w-full object-cover transition duration-700 group-hover:scale-105 md:h-72"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition duration-700 group-hover:scale-105"
                     />
                   </div>
 
