@@ -233,4 +233,3 @@ Quick summary:
 
 **Chathuni Nimesha**
 
-GitHub: [Chathuni-Nimesha](https://github.com/Chathuni-Nimesha)
