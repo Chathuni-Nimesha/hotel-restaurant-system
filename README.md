@@ -2,8 +2,6 @@
 
 A full-stack hotel and restaurant management platform with a luxury public landing page, dynamic menu, table reservations, and an admin dashboard for menu and reservation management.
 
-![Grand Royal Hero](./docs/screenshots/hero-desktop.png)
-<!-- Add screenshots to docs/screenshots/ — see docs/screenshots/README.md -->
 
 ---
 
@@ -39,21 +37,6 @@ A full-stack hotel and restaurant management platform with a luxury public landi
 - RESTful endpoints for menus and reservations
 - MongoDB Atlas persistence via Mongoose
 - CORS configured for production frontend origins
-
----
-
-## Screenshots
-
-| Screenshot | Description |
-|------------|-------------|
-| ![Hero](./docs/screenshots/hero-desktop.png) | Landing page hero |
-| ![Menu](./docs/screenshots/menu-section.png) | Public menu section |
-| ![Reservation](./docs/screenshots/reservation-form.png) | Reservation form |
-| ![Admin Menu](./docs/screenshots/admin-menu-dashboard.png) | Admin menu dashboard |
-| ![Admin Reservations](./docs/screenshots/admin-reservations-dashboard.png) | Admin reservations |
-| ![Mobile](./docs/screenshots/mobile-hero.png) | Mobile responsive view |
-
-> Placeholder paths above. Capture screenshots locally and save them to `docs/screenshots/`. See [docs/screenshots/README.md](./docs/screenshots/README.md) for the recommended list.
 
 ---
 
@@ -107,10 +90,6 @@ Hotel-Resturant-System/
 ├── DEPLOYMENT.md                    # Vercel + Render guide
 └── README.md
 ```
-
----
-
-## Installation
 
 ### Prerequisites
 
@@ -247,12 +226,6 @@ Quick summary:
 - Payment integration for deposits
 - Multi-language support
 - Automated CI/CD pipeline and test suite
-
----
-
-## License
-
-This project is open source under the [MIT License](./LICENSE).
 
 ---
 
