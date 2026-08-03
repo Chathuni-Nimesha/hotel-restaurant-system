@@ -1,64 +1,64 @@
+"use client";
+
+import { Button } from "@/components/ui/Button";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useScrollToSection } from "@/hooks/useScrollToSection";
+
 const About = () => {
+  const scrollToSection = useScrollToSection();
+
   return (
-    <section className="bg-[#0a0a0a] text-white pt-0 pb-32">
+    <section
+      id="about"
+      aria-labelledby="about-heading"
+      className="landing-section bg-[#0a0a0a] text-white"
+    >
+      <div className="section-container">
+        <div className="section-divider landing-section-divider" aria-hidden="true" />
 
-      {/* Full Width Divider */}
-      <div className="w-full border-t border-gray-800"></div>
+        <SectionHeading
+          id="about-heading"
+          title="About Grand Royal"
+          description="Grand Royal offers an exceptional dining experience with premium ingredients, world-class chefs, and luxurious surroundings designed to create unforgettable memories."
+          className="section-heading-gap"
+          titleClassName="md:text-6xl"
+        />
 
-      {/* Large Luxury Space */}
-      <div className="h-15"></div>
-
-      <div className="w-full  px-6">
-
-        {/* Section Title */}
-        <div className="text-center mb-20">
-          <h2 className="text-center text-4xl md:text-6xl font-bold text-yellow-500 mb-6">
-            About Grand Royal
-          </h2>
-
-          <p className="text-center text-gray-300 text-lg w-full leading-relaxed">
-            Grand Royal offers an exceptional dining experience with
-            premium ingredients, world-class chefs, and luxurious
-            surroundings designed to create unforgettable memories.
-          </p>
-        </div>
-
-        {/* Content */}
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-
-          {/* Image */}
-          <div>
+        <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
+          <figure className="overflow-hidden rounded-2xl shadow-2xl">
             <img
               src="/images/Interior.jpeg"
-              alt="Grand Royal Restaurant"
-              className="w-full h-[500px] object-cover rounded-2xl shadow-2xl"
+              alt="Elegant interior dining room at Grand Royal restaurant"
+              loading="lazy"
+              decoding="async"
+              className="h-[320px] w-full object-cover transition duration-700 hover:scale-[1.02] sm:h-[400px] md:h-[500px]"
             />
-          </div>
+          </figure>
 
-          {/* Text */}
           <div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-6">
+            <h3 className="mb-6 text-3xl font-bold md:text-4xl">
               Luxury Dining Since 2010
             </h3>
 
-            <p className="text-gray-300 leading-relaxed mb-6">
-              We combine modern culinary techniques with timeless
-              hospitality to provide guests with a truly premium
-              restaurant experience.
+            <p className="mb-6 leading-relaxed text-gray-300">
+              We combine modern culinary techniques with timeless hospitality to
+              provide guests with a truly premium restaurant experience.
             </p>
 
-            <p className="text-gray-300 leading-relaxed mb-8">
-              Whether you're celebrating a special occasion, hosting
-              a business dinner, or enjoying a casual evening with
-              family and friends, our team ensures every visit is
-              memorable.
+            <p className="mb-8 leading-relaxed text-gray-300">
+              Whether you&apos;re celebrating a special occasion, hosting a
+              business dinner, or enjoying a casual evening with family and
+              friends, our team ensures every visit is memorable.
             </p>
 
-            <button className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300">
+            <Button
+              size="lg"
+              onClick={() => scrollToSection("contact")}
+              className="rounded-full px-8"
+            >
               Learn More
-            </button>
+            </Button>
           </div>
-
         </div>
       </div>
     </section>

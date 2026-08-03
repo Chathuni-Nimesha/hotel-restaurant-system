@@ -9,11 +9,9 @@ import Testimonials from "@/components/home/Testimonials";
 import Contact from "@/components/home/Contact";
 import Footer from "@/components/layout/Footer";
 
-
-
 export default function Home() {
   return (
-    <main>
+    <main id="main-content">
       <Navbar />
       <Hero />
       <Featured />
@@ -23,26 +21,29 @@ export default function Home() {
       <Gallery />
       <Testimonials />
       <Contact />
-      <div className="text-center py-16">
-        <p className="text-yellow-500 text-3xl">
-          ★★★★★
-        </p>
-        <h3 className="text-2xl font-bold mt-4 text-white">
-          Trusted by 5,000+ Guests
-        </h3>
-        <p className="text-gray-400 mt-2">
-          Award Winning Fine Dining Experience
-        </p>
-      </div>
-      <div className="max-w-7xl mx-zuto">
-        
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
+
+      <section aria-label="Guest trust highlights" className="landing-trust-section bg-black text-white">
+        <div className="section-container text-center">
+          <p className="text-3xl text-yellow-500" aria-hidden="true">
+            ★★★★★
+          </p>
+          <h3 className="mt-4 text-2xl font-bold text-white">
+            Trusted by 5,000+ Guests
+          </h3>
+          <p className="mt-2 text-gray-400">
+            Award Winning Fine Dining Experience
+          </p>
         </div>
+      </section>
+
+      <div className="section-container">
+        <div
+          className="h-[2px] bg-gradient-to-r from-transparent via-yellow-500 to-transparent"
+          aria-hidden="true"
+        />
       </div>
-      
+
       <Footer />
-      
     </main>
   );
 }

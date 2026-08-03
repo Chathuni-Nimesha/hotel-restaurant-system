@@ -1,5 +1,9 @@
 "use client";
+
 import { useState } from "react";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { TimePicker } from "@/components/ui/TimePicker";
+import { getTodayIsoDate } from "@/lib/format";
 
 const diningAreas = [
   "Indoor Dining",
@@ -22,22 +26,21 @@ const Reservation = () => {
     specialRequests: "",
   });
 
-  const handleChange =(
+  const handleChange = (
     e: React.ChangeEvent<
-    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     setFormData({
       ...formData,
-      [e.target.name]: 
-         e.target.name === "guests" 
-           ? Number(e.target.value)
-           : e.target.value,
+      [e.target.name]:
+        e.target.name === "guests"
+          ? Number(e.target.value)
+          : e.target.value,
     });
   };
-  
-  const handleSubmit = async () => {
-    try {
+
+  const handleSubmit = async () => {    try {
       const response = await fetch(
         "http://localhost:5000/api/reservations",
         {
@@ -80,25 +83,23 @@ const Reservation = () => {
       };
 
   return (
-    
-    <section className="min-h-screen bg-gradient-to-b from-black via-[#111] to-black text-white py-32">
-      <div className="max-w-[1400px] mx-auto px-8">
+    <section
+      id="reservation"
+      className="landing-section bg-gradient-to-b from-black via-[#111] to-black text-white"
+    >
+      <div className="section-container max-w-[1400px]">
+        <div className="section-divider landing-section-divider" aria-hidden="true" />
 
-        {/* Heading */}
-        <div className="h-16"></div>
-        <div className="text-center mb-20">
-          <h1 className="text-5xl md:text-6xl font-bold text-yellow-500 mb-4">
+        <header className="section-heading-gap text-center">
+          <h2 className="mb-4 text-5xl font-bold text-yellow-500 md:text-6xl">
             Reserve Your Table
-          </h1>
-
-
-          <p className="text-gray-300 text-lg mb-12">
+          </h2>
+          <p className="text-lg text-gray-300">
             Experience luxury dining at Grand Royal.
           </p>
-        </div>
-        
+        </header>
 
-        <div className="grid lg:grid-cols-2 gap-10 text-center ">
+        <div className="grid gap-8 text-center lg:grid-cols-2 lg:gap-10">
           
 
           {/* Reservation Form */}
@@ -109,106 +110,73 @@ const Reservation = () => {
               Reservation Details
             </h2>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-
-              <input
-                type="date"
+            <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <DatePicker
+                id="reservation-date"
                 name="date"
+                label="Date"
                 value={formData.date}
+                min={getTodayIsoDate()}
                 onChange={handleChange}
-                className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
+                required
               />
 
-              <input
-                type="time"
+              <TimePicker
+                id="reservation-time"
                 name="time"
+                label="Time"
                 value={formData.time}
                 onChange={handleChange}
-                className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
+                onTimeSelect={(time) =>
+                  setFormData((current) => ({ ...current, time }))
+                }
+                required
               />
-                
-              
 
-              <select
-                name="guests"
-                value={formData.guests}
-                onChange={handleChange}
-                className="bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl"
-              >
-                <option value={1}>1 Guest</option>
-                <option value={2}>2 Guests</option>
-                <option value={4}>4 Guests</option>
-                <option value={6}>6 Guests</option>
-                <option value={8}>8 Guests</option>
-              </select>
-
+              <div className="w-full text-left">
+                <label
+                  htmlFor="reservation-guests"
+                  className="mb-1 block text-sm font-medium text-gray-200"
+                >
+                  Guests
+                </label>
+                <select
+                  id="reservation-guests"
+                  name="guests"
+                  value={formData.guests}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-gray-700 bg-[#0a0a0a] p-4 text-white transition focus:border-yellow-500 focus:outline-none focus:ring-1 focus:ring-yellow-500/30"
+                >
+                  <option value={1}>1 Guest</option>
+                  <option value={2}>2 Guests</option>
+                  <option value={4}>4 Guests</option>
+                  <option value={6}>6 Guests</option>
+                  <option value={8}>8 Guests</option>
+                </select>
+              </div>
             </div>
 
-            <h3 className="text-xl font-bold text-yellow-500 mb-6">
+            <h3 className="mb-6 text-xl font-bold text-yellow-500">
               Select Dining Area
             </h3>
 
-            <div className="grid md:grid-cols-2 gap-4 mb-10">
-
-              
+            <div className="mb-10 grid gap-4 md:grid-cols-2">
+              {diningAreas.map((area) => (
                 <button
+                  key={area}
                   type="button"
-                  onClick={() => setSelectedArea("Indoor Dining")}
-                  className={`p-4 rounded-xl border transition
-                    ${
-                      selectedArea === "Indoor Dining"
-                        ? "bg-yellow-500 text-black border-yellow-500"
-                        : "bg-[#0a0a0a] text-white border-gray-700 hover:border-yellow-500"
-                    }`}
-                   
-                >
-                  Indoor Dining
-                </button>
-
-                <button 
-                type="button"
-                onClick={() => setSelectedArea("Rooftop Terrace")}
-                className={`p-4 rounded-xl border transition
-                  ${
-                    selectedArea === "Rooftop Terrace"
-                    ? "bg-yellow-500 text-black border-yellow-500"
-                    : "bg-[#0a0a0a] text-white border-gray-700 hover:border-yellow-500"
+                  aria-pressed={selectedArea === area}
+                  onClick={() => setSelectedArea(area)}
+                  className={`rounded-xl border p-4 transition ${
+                    selectedArea === area
+                      ? "border-yellow-500 bg-yellow-500 text-black"
+                      : "border-gray-700 bg-[#0a0a0a] text-white hover:border-yellow-500"
                   }`}
                 >
-                  Rooftop Terrace
-
+                  {area}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedArea("Private VIP Room")}
-                  className={`p-4 rounded-xl border transition
-                    ${
-                      selectedArea === "Private VIP Room"
-                        ? "bg-yellow-500 text-black border-yellow-500"
-                        : "bg-[#0a0a0a] text-white border-gray-700 hover:border-yellow-500"
-                    }`}
-                >
-                  Private VIP Room
-                </button>
-                <button
-                 type="button"
-                 onClick={() => setSelectedArea("Garden Dining")}
-                 className={`p-4 rounded-xl border transition
-                   ${
-                      selectedArea === "Garden Dining"
-                        ? "bg-yellow-500 text-black border-yellow-500"
-                        : "bg-[#0a0a0a] text-white border-gray-700 hover:border-yellow-500"
-
-                   }`}
-                >
-                  Garden Dining
-
-                </button>
-
-          
-
+              ))}
             </div>
-
             <h3 className="text-xl font-bold text-yellow-500 mb-6">
               Guest Information
             </h3>

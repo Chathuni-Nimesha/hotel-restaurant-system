@@ -40,9 +40,9 @@ export default function MenuPage() {
         (menu: any) => !menu.available
     ).length;
 
-    const fastFoodMenus = menus.filter(
-        (menu: any) => menu.category === "Fast Food"
-    ).length;
+    const totalCategories = new Set(
+        menus.map((menu: { category: string }) => menu.category)
+    ).size;
 
     const handleSubmit = async () => {
         const response = await fetch(
@@ -142,7 +142,7 @@ export default function MenuPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white p-10">
+        <div id="main-content" className="min-h-screen bg-black text-white p-10">
             <h1 className="text-4xl font-bold text-yellow-500 mb-8">
                 Menu Management
             </h1>
@@ -171,9 +171,9 @@ export default function MenuPage() {
 
                 <div className="bg-yellow-500 text-black p-6 rounded-lg">
                     <h2 className="text-4xl font-bold">
-                        {fastFoodMenus}
+                        {totalCategories}
                     </h2>
-                    <p>Fast Food</p>
+                    <p>Total Categories</p>
                 </div>
 
             </div>

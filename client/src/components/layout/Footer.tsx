@@ -9,9 +9,9 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-[#111] to-blacktext-white border-t border-yellow-500/20">
 
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="section-container landing-footer">
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-20">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
 
           {/* Left */}
           <div>
@@ -120,7 +120,7 @@ const Footer = () => {
         </div>
 
         {/* Contact */}
-        <div className="border-t border-gray-800 mt-16 pt-10">
+        <div className="mt-10 border-t border-gray-800 pt-8">
 
           <div className="grid md:grid-cols-2 gap-10">
 
@@ -169,7 +169,7 @@ const Footer = () => {
 
         </div>
 
-        <div className="border-t border-gray-800 mt-10 pt-8 text-center text-gray-500">
+        <div className="mt-8 border-t border-gray-800 pt-6 text-center text-gray-500">
           © 2026 Grand Royal. All Rights Reserved.
         </div>
 

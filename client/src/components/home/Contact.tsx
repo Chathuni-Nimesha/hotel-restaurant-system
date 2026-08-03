@@ -1,117 +1,211 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Textarea } from "@/components/ui/Textarea";
+import { SITE } from "@/lib/constants/site";
+
+interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface ContactFormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+const initialFormData: ContactFormData = {
+  name: "",
+  email: "",
+  message: "",
+};
+
+function validateContactForm(data: ContactFormData): ContactFormErrors {
+  const errors: ContactFormErrors = {};
+
+  if (!data.name.trim()) {
+    errors.name = "Please enter your name.";
+  }
+
+  if (!data.email.trim()) {
+    errors.email = "Please enter your email address.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.email = "Please enter a valid email address.";
+  }
+
+  if (!data.message.trim()) {
+    errors.message = "Please enter your message.";
+  } else if (data.message.trim().length < 10) {
+    errors.message = "Message must be at least 10 characters.";
+  }
+
+  return errors;
+}
+
 const Contact = () => {
+  const [formData, setFormData] = useState<ContactFormData>(initialFormData);
+  const [errors, setErrors] = useState<ContactFormErrors>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const validationErrors = validateContactForm(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setIsSubmitted(false);
+      return;
+    }
+
+    setIsSubmitted(true);
+    setFormData(initialFormData);
+    setErrors({});
+  };
+
   return (
     <section
       id="contact"
-      className="bg-[#0a0a0a] text-white py-24"
+      aria-labelledby="contact-heading"
+      className="landing-section bg-[#0a0a0a] text-white"
     >
-      <div className="mt-24"></div>
-      <div className="w-full border-t border-gray-800 mb-16"></div>
+      <div className="section-container">
+        <div className="section-divider landing-section-divider" aria-hidden="true" />
 
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Heading */}
-        <div className="h-12 "></div>
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-yellow-500 mb-4">
-            Contact Us
-          </h2>
+        <SectionHeading
+          id="contact-heading"
+          title="Contact Us"
+          description="We'd love to hear from you. Get in touch with Grand Royal."
+          className="section-heading-gap"
+          titleClassName="md:text-5xl"
+        />
+        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 md:gap-12">
+          <Card elevated className="rounded-3xl p-8 md:p-10">
+            <h3 className="mb-8 text-3xl font-bold text-yellow-500">
+              Get In Touch
+            </h3>
 
-          <p className="text-gray-300 text-lg">
-            We'd love to hear from you. Get in touch with Grand Royal.
-          </p>
-        </div>
-
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 justify-center items-start">
-          {/* Left Side */}
-            <div className="bg-[#111] border border-gray-800 rounded-3xl p-18 max-w-xl w-full mx-auto ">
-              <h3 className="text-3xl font-bold text-yellow-500 mb-8">
-                Get In Touch
-              </h3>
-
-              <div className="space-y-6">
+            <address className="space-y-6 not-italic">
               <div>
-                <h4 className="font-bold text-white mb-2">
-                  📍 Address
-                </h4>
-
-                <p className="text-gray-400">
-                  123 Luxury Avenue,
-                  Colombo, Sri Lanka
-                </p>
+                <h4 className="mb-2 font-bold text-white">Address</h4>
+                <p className="text-gray-400">{SITE.contact.address}</p>
               </div>
 
               <div>
-                <h4 className="font-bold text-white mb-2">
-                  📞 Phone
-                </h4>
-
-                <p className="text-gray-400">
-                  +94 77 123 4567
-                </p>
+                <h4 className="mb-2 font-bold text-white">Phone</h4>
+                <a
+                  href={`tel:${SITE.contact.phone.replace(/\s/g, "")}`}
+                  className="text-gray-400 transition hover:text-yellow-500"
+                >
+                  {SITE.contact.phone}
+                </a>
               </div>
 
               <div>
-                <h4 className="font-bold text-white mb-2">
-                  ✉️ Email
-                </h4>
-
-                <p className="text-gray-400">
-                  info@grandroyal.com
-                </p>
+                <h4 className="mb-2 font-bold text-white">Email</h4>
+                <a
+                  href={`mailto:${SITE.contact.email}`}
+                  className="text-gray-400 transition hover:text-yellow-500"
+                >
+                  {SITE.contact.email}
+                </a>
               </div>
 
               <div>
-                <h4 className="font-bold text-white mb-2">
-                  🕒 Opening Hours
-                </h4>
-
-                <p className="text-gray-400">
-                  Monday - Sunday
-                  <br />
-                  10:00 AM - 11:00 PM
-                </p>
+                <h4 className="mb-2 font-bold text-white">Opening Hours</h4>
+                <p className="text-gray-400">{SITE.contact.hours}</p>
               </div>
-            </div>
-          </div>
+            </address>
+          </Card>
 
-          {/* Right Side */}
-          <form className="bg-[#111] border border-gray-800 rounded-3xl p-8 max-w-xl w-full mx-auto">
-            <h3 className="text-3xl font-bold text-yellow-500 mb-8">
+          <Card elevated className="rounded-3xl p-8 md:p-10">
+            <h3 className="mb-8 text-3xl font-bold text-yellow-500">
               Send a Message
             </h3>
 
-            <div className="space-y-6">
-              <input
+            {isSubmitted && (
+              <p
+                role="status"
+                aria-live="polite"
+                className="mb-6 rounded-xl border border-green-700/50 bg-green-950/40 px-4 py-3 text-green-300"
+              >
+                Thank you for your message. Our team will get back to you soon.
+              </p>
+            )}
+
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="space-y-6"
+              aria-label="Contact form"
+            >
+              <Input
+                id="contact-name"
+                name="name"
                 type="text"
+                label="Your Name"
                 placeholder="Your Name"
-                className="w-full bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl focus:outline-none focus:border-yellow-500"
+                value={formData.name}
+                error={errors.name}
+                required
+                autoComplete="name"
+                onChange={(event) =>
+                  setFormData((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
               />
 
-              <input
+              <Input
+                id="contact-email"
+                name="email"
                 type="email"
+                label="Your Email"
                 placeholder="Your Email"
-                className="w-full bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl focus:outline-none focus:border-yellow-500"
+                value={formData.email}
+                error={errors.email}
+                required
+                autoComplete="email"
+                onChange={(event) =>
+                  setFormData((current) => ({
+                    ...current,
+                    email: event.target.value,
+                  }))
+                }
               />
 
-              <textarea
+              <Textarea
+                id="contact-message"
+                name="message"
+                label="Your Message"
                 placeholder="Your Message"
                 rows={5}
-                className="w-full bg-[#0a0a0a] border border-gray-700 p-4 rounded-xl focus:outline-none focus:border-yellow-500"
+                value={formData.message}
+                error={errors.message}
+                required
+                onChange={(event) =>
+                  setFormData((current) => ({
+                    ...current,
+                    message: event.target.value,
+                  }))
+                }
               />
 
-              <button
-                type="submit"
-                className="w-full bg-yellow-500 text-black font-bold py-4 rounded-xl hover:bg-yellow-400 transition duration-300"
-              >
+              <Button type="submit" fullWidth size="lg">
                 Send Message
-              </button>
-            </div>
-          </form>
-          </div>
+              </Button>
+            </form>
+          </Card>
         </div>
       </div>
     </section>
   );
 };
-
 export default Contact;

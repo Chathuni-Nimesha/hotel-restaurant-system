@@ -1,3 +1,5 @@
+import { SectionHeading } from "@/components/ui/SectionHeading";
+
 const galleryImages = [
   "/images/gallery1.jpg",
   "/images/gallery2.jpg",
@@ -9,38 +11,37 @@ const galleryImages = [
 
 export default function Gallery() {
   return (
-    <section className="bg-[#0a0a0a] text-white py-24">
-      <div className="w-full border-t border-gray-800 mb-4"></div>
+    <section
+      id="gallery"
+      aria-labelledby="gallery-heading"
+      className="landing-section bg-[#0a0a0a] text-white"
+    >
+      <div className="section-container">
+        <div className="section-divider landing-section-divider" aria-hidden="true" />
 
-      <div className="w-full  px-6">
-        <div className="h-8"></div>
+        <SectionHeading
+          id="gallery-heading"
+          title="Luxury Experience"
+          description="Discover elegant spaces, premium hospitality, and unforgettable moments."
+          className="section-heading-gap"
+        />
 
-        <div className="text-center ">
-          <h2 className="text-5xl font-bold text-yellow-500 mb-4">
-            Luxury Experience
-          </h2>
-
-          <p className="text-gray-300 text-lg mb-32">
-            Discover elegant spaces, premium hospitality, and unforgettable moments.
-          </p>
-        </div>
-        <div className="h-8"></div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {galleryImages.map((image, index) => (
             <div
               key={index}
-              className="bg-[#111] rounded-3xl overflow-hidden border border-gray-800 hover:border-yello-500 hover:translate-y-2 transition-all duration-500  group  "
+              className="group overflow-hidden rounded-3xl border border-gray-800 bg-[#111] transition-all duration-500 hover:border-yellow-500 hover:-translate-y-2"
             >
               <img
                 src={image}
                 alt={`Gallery ${index + 1}`}
-                className="w-full h-80 object-cover transition duration-700 group-hover:scale-110"
+                loading="lazy"
+                decoding="async"
+                className="h-80 w-full object-cover transition duration-700 group-hover:scale-110"
               />
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

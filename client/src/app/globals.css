@@ -1,22 +1,196 @@
 @import "tailwindcss";
 
-:root {
-  --background: #0f0f0f;
-  --foreground: #ffffff;
-  --primary: #d4af37;
+@theme inline {
+  --color-background: #0f0f0f;
+  --color-surface: #111111;
+  --color-surface-elevated: #0a0a0a;
+  --color-foreground: #ffffff;
+  --color-muted: #9ca3af;
+  --color-primary: #d4af37;
+  --color-primary-hover: #eab308;
+  --color-border: #374151;
+  --color-border-subtle: #1f2937;
 
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  --shadow-card: 0 0 40px rgba(234, 179, 0, 0.08);
+  --shadow-card-hover: 0 0 25px rgba(234, 179, 8, 0.2);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
+  --primary: var(--color-primary);
+}
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
+  margin: 0;
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: rgba(212, 175, 55, 0.35);
+  color: var(--foreground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.section-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.section-divider {
+  width: 100%;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Landing page vertical rhythm — single spacing system */
+.landing-section {
+  padding-block: 4rem;
+}
+
+.landing-section-divider {
+  margin-bottom: 2rem;
+}
+
+.section-heading-gap {
+  margin-bottom: 2.5rem;
+}
+
+.section-block-gap {
+  margin-bottom: 2.5rem;
+}
+
+.landing-trust-section {
+  padding-block: 3rem;
+}
+
+.landing-footer {
+  padding-block: 4rem;
+}
+
+@media (min-width: 768px) {
+  .landing-section {
+    padding-block: 5rem;
+  }
+
+  .landing-section-divider {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-heading-gap {
+    margin-bottom: 3rem;
+  }
+
+  .section-block-gap {
+    margin-bottom: 3rem;
+  }
+
+  .landing-trust-section {
+    padding-block: 3.5rem;
+  }
+
+  .landing-footer {
+    padding-block: 5rem;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+.native-picker {
+  color-scheme: dark;
+}
+
+.native-picker::-webkit-calendar-picker-indicator,
+.native-picker::-webkit-time-picker-indicator {
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }

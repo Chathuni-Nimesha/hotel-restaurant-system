@@ -142,7 +142,7 @@ export default function ReservationsPage() {
 
 
   return (
-  <div className="min-h-screen bg-black text-white p-10">
+  <div id="main-content" className="min-h-screen bg-black text-white p-10">
     <h1 className="text-4xl font-bold mb-8 text-yellow-500">
       Reservation Dashboard
     </h1>

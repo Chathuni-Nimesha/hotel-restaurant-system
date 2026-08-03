@@ -1,4 +1,13 @@
-const testimonials = [
+import { Card } from "@/components/ui/Card";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+
+interface Testimonial {
+  name: string;
+  image: string;
+  review: string;
+}
+
+const testimonials: Testimonial[] = [
   {
     name: "John Smith",
     image: "/images/client1.jpeg",
@@ -19,59 +28,67 @@ const testimonials = [
   },
 ];
 
+function StarRating() {
+  return (
+    <div
+      className="mb-4 text-yellow-500"
+      role="img"
+      aria-label="5 out of 5 stars"
+    >
+      <span aria-hidden="true">★★★★★</span>
+    </div>
+  );
+}
+
 export default function Testimonials() {
   return (
-    <section className="bg-[#0a0a0a] text-white py-24">
-      <div className="w-full border-t border-gray-800 mb-16"></div>
+    <section
+      id="testimonials"
+      aria-labelledby="testimonials-heading"
+      className="landing-section bg-[#0a0a0a] text-white"
+    >
+      <div className="section-container">
+        <div className="section-divider landing-section-divider" aria-hidden="true" />
 
-      <div className="w-full px-6">
-        <div className="h-15"></div>
+        <SectionHeading
+          id="testimonials-heading"
+          title="What Our Guests Say"
+          description="Experiences shared by our valued guests."
+          className="section-heading-gap"
+        />
 
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-yellow-500 mb-4">
-            What Our Guests Say
-          </h2>
+        <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" role="list">
+          {testimonials.map((item) => (
+            <li key={item.name}>
+              <Card hover elevated className="h-full rounded-3xl p-8">
+                <article aria-label={`Review by ${item.name}`}>
+                  <StarRating />
 
-          <p className="text-gray-300 text-lg">
-            Experiences shared by our valued guests.
-          </p>
-        </div>
-        <div className="h-8"></div>
+                  <blockquote className="mb-6 leading-relaxed text-gray-300">
+                    <p>&ldquo;{item.review}&rdquo;</p>
+                  </blockquote>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((item, index) => (
-            <div
-              key={index}
-              className="bg-[#111] border border-gray-800 p-8 rounded-3xl hover:border-yellow-500 hover:-translate-y-2 transition duration-300"
-            >
-              <div className="text-yellow-500 text-2xl mb-4">
-                ⭐⭐⭐⭐⭐
-              </div>
+                  <footer className="mt-6 flex items-center gap-4">
+                    <img
+                      src={item.image}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-16 w-16 rounded-full border-2 border-yellow-500 object-cover"
+                    />
 
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                "{item.review}"
-              </p>
-
-              <div className="flex items-center gap-4 mt-6">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-yellow-500"
-                />
-
-                <div>
-                  <h3 className="font-bold text-white">
-                    {item.name}
-                  </h3>
-
-                  <p className="text-gray-400 text-sm">
-                    Verified Guest
-                  </p>
-                </div>
-              </div>
-            </div>
+                    <div>
+                      <cite className="not-italic">
+                        <p className="font-bold text-white">{item.name}</p>
+                      </cite>
+                      <p className="text-sm text-gray-400">Verified Guest</p>
+                    </div>
+                  </footer>
+                </article>
+              </Card>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
