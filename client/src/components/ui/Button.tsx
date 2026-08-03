@@ -1,5 +1,6 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { Spinner } from "./Spinner";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
@@ -8,6 +9,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   fullWidth?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -31,16 +34,32 @@ export function Button({
   variant = "primary",
   size = "md",
   fullWidth = false,
+  isLoading = false,
+  loadingText,
   className,
   type = "button",
   disabled,
   children,
   ...props
 }: ButtonProps) {
+  const isDisabled = disabled || isLoading;
+
+  let content: ReactNode = children;
+
+  if (isLoading) {
+    content = (
+      <>
+        <Spinner className="mr-2" />
+        {loadingText ?? children}
+      </>
+    );
+  }
+
   return (
     <button
       type={type}
-      disabled={disabled}
+      disabled={isDisabled}
+      aria-busy={isLoading || undefined}
       className={cn(
         "inline-flex items-center justify-center font-semibold transition duration-300",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
@@ -52,7 +71,7 @@ export function Button({
       )}
       {...props}
     >
-      {children}
+      {content}
     </button>
   );
 }

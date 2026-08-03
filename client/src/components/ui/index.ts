@@ -6,6 +6,7 @@ export { Label, type LabelProps } from "./Label";
 export { SectionHeading, type SectionHeadingProps } from "./SectionHeading";
 export { Select, type SelectOption, type SelectProps } from "./Select";
 export { SkipLink } from "./SkipLink";
+export { Spinner, type SpinnerProps } from "./Spinner";
 export {
   MenuCardSkeleton,
   MenuGridSkeleton,
