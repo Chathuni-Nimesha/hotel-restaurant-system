@@ -32,8 +32,29 @@ export function useMenus(): UseMenusResult {
   }, []);
 
   useEffect(() => {
-    void loadMenus();
-  }, [loadMenus]);
+    let isMounted = true;
+
+    fetchMenus()
+      .then((items) => {
+        if (isMounted) {
+          setMenus(items);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setMenus([]);
+          setError(
+            err instanceof Error ? err.message : "Unable to load menu items."
+          );
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return {
     menus,

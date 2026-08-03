@@ -1,12 +1,17 @@
+const DEFAULT_SITE_URL = "https://grandroyal.example.com";
+
+export function getSiteUrl(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL;
+}
+
 export const SITE = {
   name: "Grand Royal",
   title: "Grand Royal | Luxury Dining & Reservations",
   description:
     "Experience world-class cuisine, premium hospitality, and unforgettable moments at Grand Royal fine dining restaurant in Colombo, Sri Lanka.",
-  url: "https://grandroyal.example.com",
   locale: "en_LK",
   applicationName: "Grand Royal",
-  authors: [{ name: "Chathuni Nimesha", url: "https://grandroyal.example.com" }],
+  authors: [{ name: "Chathuni Nimesha", url: DEFAULT_SITE_URL }],
   keywords: [
     "Grand Royal",
     "luxury dining",

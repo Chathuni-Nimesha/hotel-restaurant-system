@@ -1,10 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  deleteReservationRecord,
+  fetchReservations,
+  updateReservationRecord,
+  type ReservationRecord,
+} from "@/lib/api/reservations";
+import { getTodayIsoDate } from "@/lib/format";
 
 export default function ReservationsPage() {
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [editingReservation, setEditingReservation] = useState<any>(null);
+  const [reservations, setReservations] = useState<ReservationRecord[]>([]);
+  const [editingReservation, setEditingReservation] =
+    useState<ReservationRecord | null>(null);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -12,7 +20,6 @@ export default function ReservationsPage() {
     phone: "",
     guests: "",
     status: "",
-    
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,383 +27,326 @@ export default function ReservationsPage() {
   const [sortOrder, setSortOrder] = useState("Newest");
   const [dateFilter, setDateFilter] = useState("");
 
-
-  const fetchReservations = async () => {
-    const response = await fetch(
-      "http://localhost:5000/api/reservations"
-    );
-
-    const data = await response.json();
-
-    setReservations(data.reservations);
+  const loadReservations = async () => {
+    const items = await fetchReservations();
+    setReservations(items);
   };
 
   useEffect(() => {
-    fetchReservations();
+    let isMounted = true;
+
+    fetchReservations()
+      .then((items) => {
+        if (isMounted) {
+          setReservations(items);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setReservations([]);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const deleteReservation = async (id: string) => {
-   const response = await fetch(
-     `http://localhost:5000/api/reservations/${id}`,
-     {
-       method: "DELETE",
-     }
-    );
-
-   const data = await response.json();
-
-   if (data.success) {
-     fetchReservations();
-    }
+    await deleteReservationRecord(id);
+    await loadReservations();
   };
 
-  const handleEdit = (reservation: any) => {
+  const handleEdit = (reservation: ReservationRecord) => {
     setEditingReservation(reservation);
 
     setFormData({
       fullName: reservation.fullName,
       email: reservation.email,
       phone: reservation.phone,
-      guests: reservation.guests,
+      guests: String(reservation.guests),
       status: reservation.status,
     });
-
   };
 
   const handleSave = async () => {
-    const response = await fetch(
-      `http://localhost:5000/api/reservations/${editingReservation._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-      
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert("Reservation updated Successfully");
-      setEditingReservation(null);
-      fetchReservations();
+    if (!editingReservation) {
+      return;
     }
+
+    await updateReservationRecord(editingReservation._id, formData);
+    alert("Reservation updated Successfully");
+    setEditingReservation(null);
+    await loadReservations();
   };
 
-  // Dashboard Statistics
   const totalReservations = reservations.length;
-
+  const todaysReservations = reservations.filter(
+    (reservation) => reservation.date === getTodayIsoDate()
+  ).length;
   const pendingReservations = reservations.filter(
-    (reservation: any) => reservation.status === "Pending"
+    (reservation) => reservation.status === "Pending"
   ).length;
-
   const confirmedReservations = reservations.filter(
-    (reservation: any) => reservation.status === "Confirmed"
+    (reservation) => reservation.status === "Confirmed"
   ).length;
-  
   const cancelledReservations = reservations.filter(
-    (reservation: any) => reservation.status === "Cancelled"
+    (reservation) => reservation.status === "Cancelled"
   ).length;
 
-  const completedReservations = reservations.filter(
-    (reservation: any) => reservation.status === "Completed"
-  ).length;
-
-  const filteredReservations = reservations.filter((reservation: any) => {
+  const filteredReservations = reservations.filter((reservation) => {
     const matchesSearch =
-      reservation.fullName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-
-       reservation.email
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-
-       reservation.phone
-        .includes(searchTerm);
+      reservation.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reservation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reservation.phone.includes(searchTerm);
 
     const matchesStatus =
-      statusFilter === "All" ||
-      reservation.status === statusFilter;
+      statusFilter === "All" || reservation.status === statusFilter;
 
-    const matchesDate =
-      dateFilter === "" ||
-      reservation.date === dateFilter;
+    const matchesDate = dateFilter === "" || reservation.date === dateFilter;
 
     return matchesSearch && matchesStatus && matchesDate;
-
-   
   });
 
-  const sortedReservations = [...filteredReservations].sort((a: any, b: any) => {
+  const sortedReservations = [...filteredReservations].sort((a, b) => {
     if (sortOrder === "Newest") {
-       return new Date(b.date).getTime() - new Date(a.date).getTime();
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
     }
+
     return new Date(a.date).getTime() - new Date(b.date).getTime();
-
-      
   });
-
-
 
   return (
-  <div id="main-content" className="min-h-screen bg-black text-white p-10">
-    <h1 className="text-4xl font-bold mb-8 text-yellow-500">
-      Reservation Dashboard
-    </h1>
-    <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-blue-600 p-6 rounded-lg">
+    <div id="main-content" className="min-h-screen bg-black p-10 text-white">
+      <h1 className="mb-8 text-4xl font-bold text-yellow-500">
+        Reservation Dashboard
+      </h1>
+      <div className="mb-8 grid gap-6 md:grid-cols-3 lg:grid-cols-5">
+        <div className="rounded-lg bg-blue-600 p-6">
           <h2 className="text-3xl font-bold">{totalReservations}</h2>
-          <p>Total Reservations</p>
+          <p>Total</p>
         </div>
 
-        <div className="bg-yellow-500 text-black p-6 rounded-lg">
+        <div className="rounded-lg bg-indigo-600 p-6">
+          <h2 className="text-3xl font-bold">{todaysReservations}</h2>
+          <p>Today&apos;s Reservations</p>
+        </div>
+
+        <div className="rounded-lg bg-yellow-500 p-6 text-black">
           <h2 className="text-3xl font-bold">{pendingReservations}</h2>
           <p>Pending</p>
         </div>
 
-        <div className="bg-green-600 p-6 rounded-lg">
+        <div className="rounded-lg bg-green-600 p-6">
           <h2 className="text-3xl font-bold">{confirmedReservations}</h2>
           <p>Confirmed</p>
         </div>
 
-        <div className="bg-red-600 p-6 rounded-lg">
+        <div className="rounded-lg bg-red-600 p-6">
           <h2 className="text-3xl font-bold">{cancelledReservations}</h2>
           <p>Cancelled</p>
         </div>
+      </div>
 
-        <div className="bg-indigo-600 p-6 rounded-lg">
-          <h2 className="text-3xl font-bold">{completedReservations}</h2>
-          <p>Completed</p>
-        </div>
-    </div>
+      {editingReservation && (
+        <div className="mb-8 rounded-lg border border-yellow-500 bg-gray-900 p-6">
+          <h2 className="mb-4 text-2xl font-bold text-yellow-500">
+            Edit Reservation
+          </h2>
 
-    {editingReservation && (
-      <div className="bg-gray-900 border border-yellow-500 rounded-lg p-6 mb-8">
-        <h2 className="text-2xl font-bold text-yellow-500 mb-4">
-          Edit Reservation
-        </h2>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1">Full Name</label>
-            <input
-              type="text"
-              value={formData.fullName}
-              onChange={(e) =>
-                setFormData({ ...formData,
-                  fullName: e.target.value,
-                })
-              }
-              className="w-full p-2 rounded bg-gray-800 border border-gray-600"
-              
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block">Full Name</label>
+              <input
+                type="text"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                className="w-full rounded border border-gray-600 bg-gray-800 p-2"
               />
-          </div>
-          
-          <div>
-            <label className="block mb-1">Email</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  email: e.target.value,
-                })
-              }
-              className="w-full p-2 rounded bg-gray-800 border border-gray-600"
-              
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Phone</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  phone: e.target.value,
-                })
-              }
-              className="w-full p-2 rounded bg-gray-800 border border-gray-600"
-            />
-          </div>
+            </div>
 
-          <div>
-            <label className="block mb-1">Guests</label>
-            <input
-              type="number"
-              value={formData.guests}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  guests: e.target.value,
-                })
-              }
-              className="w-full p-2 rounded bg-gray-800 border border-gray-600"
-              
-            />
-          </div>
-          
-          <div>
-            <label className="block mb-1">Status</label>
+            <div>
+              <label className="mb-1 block">Email</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className="w-full rounded border border-gray-600 bg-gray-800 p-2"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block">Phone</label>
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                className="w-full rounded border border-gray-600 bg-gray-800 p-2"
+              />
+            </div>
 
-            <select
-              value={formData.status}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  status: e.target.value,
-                })
-              }
-              className="w-full p-2 rounded bg-gray-800 border border-gray-600"
+            <div>
+              <label className="mb-1 block">Guests</label>
+              <input
+                type="number"
+                value={formData.guests}
+                onChange={(e) =>
+                  setFormData({ ...formData, guests: e.target.value })
+                }
+                className="w-full rounded border border-gray-600 bg-gray-800 p-2"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block">Status</label>
+
+              <select
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData({ ...formData, status: e.target.value })
+                }
+                className="w-full rounded border border-gray-600 bg-gray-800 p-2"
               >
-                <option value="Pending"> 🟡 Pending</option>
-                <option value="Confirmed"> 🟢 Confirmed</option>
-                <option value="Cancelled"> 🔴 Cancelled</option>
-                <option value="Completed"> 🔵 Completed</option>
-            </select>
-
-
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
           </div>
 
-        </div>
-
-        {/*Buttons */}
-        <div className="flex gap-4 mt-6">
-          <button
-            onClick={handleSave}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
+          <div className="mt-6 flex gap-4">
+            <button
+              onClick={handleSave}
+              className="rounded bg-green-600 px-6 py-2 text-white hover:bg-green-700"
             >
               Save Changes
-
             </button>
 
             <button
               onClick={() => setEditingReservation(null)}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded"
-              >
-                Cancel
-              </button>
+              className="rounded bg-red-600 px-6 py-2 text-white hover:bg-red-700"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-          
-      </div>
-    )}
+      )}
 
-    <div className="overflow-x-auto">
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          placeholder=" 🔍 Search by Name, Email or Phone..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 p-3 rounded bg-gray-800 border border-gray-600 text-white"
+      <div className="overflow-x-auto">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row">
+          <input
+            type="text"
+            placeholder="Search by Name, Email or Phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 rounded border border-gray-600 bg-gray-800 p-3 text-white"
           />
           <input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="w-52 p-3 rounded bg-gray-800 border border-gray-600 text-white"
+            className="w-full rounded border border-gray-600 bg-gray-800 p-3 text-white lg:w-52"
           />
 
-          {/* Status Filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-52 p-3 rounded bg-gray-800 border border-gray-600 text-white"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Pending"> 🟡 Pending</option>
-              <option value="Confirmed"> 🟢 Confirmed</option>
-              <option value="Cancelled"> 🔴 Cancelled</option>
-              <option value="Completed"> 🔵 Completed</option>
-            </select>
+            className="w-full rounded border border-gray-600 bg-gray-800 p-3 text-white lg:w-52"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
 
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="w-48 p-3 rounded bg-gray-800 border border-gray-600 text-white"
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="w-full rounded border border-gray-600 bg-gray-800 p-3 text-white lg:w-48"
+          >
+            <option value="Newest">Newest</option>
+            <option value="Oldest">Oldest</option>
+          </select>
+        </div>
 
-            >
-              <option value="Newest">Newest</option>
-              <option value="Oldest">Oldest</option>
+        <table className="w-full overflow-hidden rounded-lg border border-gray-700">
+          <thead>
+            <tr className="bg-yellow-500 text-black">
+              <th className="p-3">Name</th>
+              <th className="p-3">Email</th>
+              <th className="p-3">Phone</th>
+              <th className="p-3">Date</th>
+              <th className="p-3">Time</th>
+              <th className="p-3">Dining Area</th>
+              <th className="p-3">Guests</th>
+              <th className="p-3">Status</th>
+              <th className="p-3">Actions</th>
+            </tr>
+          </thead>
 
-            </select>
-      </div>
-
-      <table className="w-full border border-gray-700 rounded-lg overflow-hidden">
-        <thead>
-          <tr className="bg-yellow-500 text-black">
-            <th className="p-3">Name</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">Phone</th>
-            <th className="p-3">Date</th>
-            <th className="p-3">Time</th>
-            <th className="p-3">Dining Area</th>
-            <th className="p-3">Guests</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {sortedReservations.map((reservation: any) => (
-            <tr
-              key={reservation._id}
-              className="border-b border-gray-700 text-center hover:bg-gray-900"
-            >
-              <td className="p-3">{reservation.fullName}</td>
-              <td className="p-3">{reservation.email}</td>
-              <td className="p-3">{reservation.phone}</td>
-              <td className="p-3">{reservation.date}</td>
-              <td className="p-3">{reservation.time}</td>
-              <td className="p-3">{reservation.diningArea}</td>
-              <td className="p-3">{reservation.guests}</td>
-              <td className="p-3">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-semibold
-                    ${
+          <tbody>
+            {sortedReservations.map((reservation) => (
+              <tr
+                key={reservation._id}
+                className="border-b border-gray-700 text-center hover:bg-gray-900"
+              >
+                <td className="p-3">{reservation.fullName}</td>
+                <td className="p-3">{reservation.email}</td>
+                <td className="p-3">{reservation.phone}</td>
+                <td className="p-3">{reservation.date}</td>
+                <td className="p-3">{reservation.time}</td>
+                <td className="p-3">{reservation.diningArea}</td>
+                <td className="p-3">{reservation.guests}</td>
+                <td className="p-3">
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
                       reservation.status === "Confirmed"
                         ? "bg-green-600"
                         : reservation.status === "Cancelled"
-                        ? "bg-red-600"
-                        :reservation.status === "Completed"
-                        ? "bg-blue-600"
-                        : "bg-yellow-500 text-black"
+                          ? "bg-red-600"
+                          : reservation.status === "Completed"
+                            ? "bg-blue-600"
+                            : "bg-yellow-500 text-black"
                     }`}
-                >
-                  {reservation.status}
+                  >
+                    {reservation.status}
+                  </span>
+                </td>
 
-                </span>
-              </td>
-
-              <td className="p-3 space-x-2">
-                <button
-                onClick={() =>handleEdit(reservation)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow"
-                >
-                  Edit
+                <td className="space-x-2 p-3">
+                  <button
+                    onClick={() => handleEdit(reservation)}
+                    className="rounded-lg bg-blue-500 px-4 py-2 text-white shadow hover:bg-blue-600"
+                  >
+                    Edit
                   </button>
-              
-                    <button
-                   onClick={() =>{
-                    if (confirm("Are you sure you want to delete this reservation?")){
-                        deleteReservation(reservation._id);
-                    }
-                   }}
-                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 shadow "
-                >
+
+                  <button
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Are you sure you want to delete this reservation?"
+                        )
+                      ) {
+                        void deleteReservation(reservation._id);
+                      }
+                    }}
+                    className="rounded bg-red-500 px-4 py-2 text-white shadow hover:bg-red-600"
+                  >
                     Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-);
+  );
 }

@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SkipLink } from "@/components/ui/SkipLink";
-import { SITE } from "@/lib/constants/site";
+import { getSiteUrl, SITE } from "@/lib/constants/site";
 import "./globals.css";
+
+const siteUrl = getSiteUrl();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
+  metadataBase: new URL(siteUrl),
   title: {
     default: SITE.title,
     template: `%s | ${SITE.name}`,
@@ -27,12 +29,12 @@ export const metadata: Metadata = {
   authors: [...SITE.authors],
   keywords: [...SITE.keywords],
   alternates: {
-    canonical: SITE.url,
+    canonical: siteUrl,
   },
   openGraph: {
     title: SITE.title,
     description: SITE.description,
-    url: SITE.url,
+    url: siteUrl,
     siteName: SITE.name,
     locale: SITE.locale,
     type: "website",

@@ -12,8 +12,6 @@ interface ErrorPageProps {
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
-      // Surface unexpected runtime errors during local development.
-      // eslint-disable-next-line no-console
       console.error(error);
     }
   }, [error]);
